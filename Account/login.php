@@ -1,3 +1,25 @@
+<?php
+   include("../Connection/config.php");
+   include("../Models/admins.php");
+   session_start(); 
+   $conn = new Database();
+    
+   if (isset($_POST["submit"])) {
+    $email = $_POST['login-email'];
+    $password = $_POST['login-password'];
+    $admin = new Admin($conn->getConnection());
+    $loginResult = $admin->loginAdmin($email, $password);
+
+    if ($loginResult) {
+        // Redirect to dashboard or another page
+        header("Location: dashboard.php");
+        exit();
+    } else {
+        header("Location: signup.php");
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,7 +54,7 @@
                 <label for="exampleInputPassword1">Password</label>
                 <input type="password" id="login-password" name="login-password" class="form-control" id="exampleInputPassword1" placeholder="Password">
             </div>
-            <button type="submit" class="btn btn-success">Submit</button>
+            <button type="submit" name="submit" class="btn btn-success">Submit</button>
             <a href="signup.php"><button type="button" class="btn btn-outline-success">Signup</button></a>
         </form>
         </div>

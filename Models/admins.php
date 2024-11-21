@@ -45,6 +45,54 @@ class Admin
     }
 
 
+    function getAdminByEmail($email) {
+        global $conn; // Assuming you have the $conn object from the Database class
+        $query = "SELECT * FROM admins WHERE email = ?";
+        $stmt = $this->getdb()->prepare($query);
+        
+        if ($stmt === false) {
+            error_log("Error preparing statement: " . $this->conn->error);
+            return false;
+        }
+    
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 1) {
+            return $result->fetch_assoc(); // Return user data as an associative array
+        } else {
+            return null; // No user found with that email
+        }
+    }
+
+    function loginAdmin($email, $password) {
+        // Get user by email
+        $user = $this->getAdminByEmail($email);
+        
+        if (!$user) {
+            // User not found
+            return "Invalid email or password.";
+        }
+    
+        // Verify password
+        if (password_verify($password, $user['password_hash'])) {
+            // Password is correct, start a session
+            session_start();
+            $_SESSION['user_id'] = $user['id']; // Store user ID in session
+            $_SESSION['email'] = $user['email']; // Store email in session (optional)
+            $_SESSION['role'] = $user['role']; // If you have a role (e.g. admin)
+            
+            // Redirect or return success message
+            header("index.php");    
+            return true;
+            
+        } else {
+            // Incorrect password
+            return false;
+        }
+    }
+
     // Create a new admin in the database
     public function createAdmin() {
         // SQL query to insert data into the admins table
