@@ -76,20 +76,20 @@ class Admin
         }
     
         // Verify password
-        if (password_verify($password, $user['password_hash'])) {
+        if ($password === $user['password_hash']) {
             // Password is correct, start a session
             session_start();
             $_SESSION['user_id'] = $user['id']; // Store user ID in session
             $_SESSION['email'] = $user['email']; // Store email in session (optional)
-            $_SESSION['role'] = $user['role']; // If you have a role (e.g. admin)
+            $_SESSION['cin'] = $user['cin'];
+            $_SESSION['phone_number'] = $user['phone_number'];
+            $_SESSION['date_of_birth'] = $user['date_of_birth']; // If you have a role (e.g. admin)
             
             // Redirect or return success message
-            header("index.php");    
-            return true;
-            
+            return "Login successful!";
         } else {
             // Incorrect password
-            return false;
+            return "Invalid email or password.";
         }
     }
 

@@ -2,6 +2,7 @@
    include("../Connection/config.php");
    include("../Models/admins.php");
    session_start(); 
+   session_destroy();
    $conn = new Database();
     
    if (isset($_POST["submit"])) {
@@ -10,12 +11,14 @@
     $admin = new Admin($conn->getConnection());
     $loginResult = $admin->loginAdmin($email, $password);
 
-    if ($loginResult) {
+    if ($loginResult === "Login successful!") {
         // Redirect to dashboard or another page
-        header("Location: dashboard.php");
-        exit();
+        echo $email;
+        echo $password , "<br>";
+        echo $loginResult ;
     } else {
-        header("Location: signup.php");
+        echo $email, "<br>",$password, "<br>";
+        echo $loginResult;
     }
 }
 ?>
@@ -48,11 +51,11 @@
         <form method="POST" action="">
             <div class="form-group">
                 <label for="exampleInputEmail1">Email address</label>
-                <input type="email" id="login-email" name="login-email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                <input type="email" id="login-email" name="login-email" class="form-control"aria-describedby="emailHelp" placeholder="Enter email">
             </div>
             <div class="form-group">
                 <label for="exampleInputPassword1">Password</label>
-                <input type="password" id="login-password" name="login-password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                <input type="password" id="login-password" name="login-password" class="form-control"  placeholder="Password">
             </div>
             <button type="submit" name="submit" class="btn btn-success">Submit</button>
             <a href="signup.php"><button type="button" class="btn btn-outline-success">Signup</button></a>
