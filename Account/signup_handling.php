@@ -2,7 +2,7 @@
 // register.php
 
 // Connecting to database...
-include '..\Connection\config.php';
+require '..\Connection\config.php';
 
 // Collecting Signup page Data....
 if (isset($_POST["submit"])) {

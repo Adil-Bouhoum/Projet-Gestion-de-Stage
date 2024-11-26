@@ -116,7 +116,7 @@ class Admin
         $this->cin = htmlspecialchars(strip_tags($this->cin));
         $this->email = htmlspecialchars(strip_tags($this->email));
         $this->profile_picture_url = htmlspecialchars(strip_tags($this->profile_picture_url));
-        $this->password_hash = htmlspecialchars(strip_tags($this->password_hash));
+        $this->password_hash =password_hash($this->password_hash, PASSWORD_BCRYPT);
         
         // Generate a password reset token (optional, only if needed)
         $this->password_reset_token = bin2hex(random_bytes(16)); // Generates a secure random token

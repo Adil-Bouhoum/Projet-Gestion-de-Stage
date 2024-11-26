@@ -1,24 +1,76 @@
 <?php
-   include("../Connection/config.php");
-   include("../Models/admins.php");
-   session_start(); 
-   session_destroy();
-   $conn = new Database();
-    
-   if (isset($_POST["submit"])) {
-    $email = $_POST['login-email'];
-    $password = $_POST['login-password'];
-    $admin = new Admin($conn->getConnection());
-    $loginResult = $admin->loginAdmin($email, $password);
+// Include necessary files
+include("../Connection/config.php");
+include("../Models/admins.php");
+include("../Models/professors.php");
+include("../Models/students.php");
+session_start(); // Start the session
 
-    if ($loginResult === "Login successful!") {
-        // Redirect to dashboard or another page
-        echo $email;
-        echo $password , "<br>";
-        echo $loginResult ;
+$conn = new Database(); // Create a database connection
+
+// Check if the form is submitted
+if (isset($_POST["submit"])) {
+    // Get form inputs
+    $email = trim($_POST['login-email']);
+    $password = trim($_POST['login-password']);
+    
+    // Initialize variables for user and user type
+    $user = null;
+    $userType = null;
+
+    // Check if the email exists in the Admins table
+    $admin = new Admin($conn->getConnection());
+    $user = $admin->getAdminByEmail($email);
+    if ($user) {
+        $userType = 'admin';
+    }
+
+    // If not found, check Professors table
+    if (!$user) {
+        $professor = new Professor($conn->getConnection());
+        $user = $professor->getProfessorByEmail($email);
+        if ($user) {
+            $userType = 'professor';
+        }
+    }
+
+    // If not found, check Students table
+    if (!$user) {
+        $student = new Student($conn->getConnection());
+        $user = $student->getStudentByEmail($email);
+        if ($user) {
+            $userType = 'student';
+        }
+    }
+
+    // If user is found and password matches
+    if ($user && password_verify($password, $user['password_hash'])) {
+        // Set session variables
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_type'] = $userType;
+        $_SESSION['email'] = $user['email'];
+
+        // Redirect based on user type
+        switch ($userType) {
+            case 'admin':
+                header("Location: admin_dashboard.php");
+                exit();
+
+            case 'professor':
+                header("Location: professor_dashboard.php");
+                exit();
+
+            case 'student':
+                header("Location: student_dashboard.php");
+                exit();
+        }
     } else {
-        echo $email, "<br>",$password, "<br>";
-        echo $loginResult;
+        // Set error in the session if login failed
+        $_SESSION['error'] = "Invalid email or password.";
+
+        // Redirect back to login page
+        header("Location: login.php");
+        exit();
     }
 }
 ?>
@@ -50,11 +102,11 @@
         </div>
         <form method="POST" action="">
             <div class="form-group">
-                <label for="exampleInputEmail1">Email address</label>
+                <label for="login-email">Email address</label>
                 <input type="email" id="login-email" name="login-email" class="form-control"aria-describedby="emailHelp" placeholder="Enter email">
             </div>
             <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
+                <label for="login-password">Password</label>
                 <input type="password" id="login-password" name="login-password" class="form-control"  placeholder="Password">
             </div>
             <button type="submit" name="submit" class="btn btn-success">Submit</button>
