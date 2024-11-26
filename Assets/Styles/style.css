@@ -1,0 +1,33 @@
+/* Main navbar items hover effect */
+.navbar-nav .nav-item .nav-link {
+    position: relative;
+    color: black;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .navbar-nav .nav-item .nav-link:hover {
+    color: #28a745; /* Green color */
+  }
+  
+  .navbar-nav .nav-item .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px; /* Adjust for spacing below text */
+    width: 0;
+    height: 5px; /* Thickness of the line */
+    background-color: white; /* Green color */
+    transition: width 0.3s ease;
+  }
+  
+  .navbar-nav .nav-item .nav-link:hover::after {
+    width: 100%;
+  }
+  
+  /* Subnavbar hover effect */
+  .navbar-nav .nav-item:hover .nav-link {
+    color: #28a745;
+    border-bottom: 2px solid #28a745;
+  }
+  
