@@ -12,7 +12,7 @@
           <a class="nav-link text-white me-5 active" href="#">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white me-5" href="#">Link</a>
+          <a class="nav-link text-white me-5" href="#">action</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link text-white me-5 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
