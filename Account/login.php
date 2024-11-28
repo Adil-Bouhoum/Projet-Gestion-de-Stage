@@ -4,7 +4,10 @@ include("../Connection/config.php");
 include("../Models/admins.php");
 include("../Models/professors.php");
 include("../Models/students.php");
-session_start(); // Start the session
+session_start();
+session_destroy();
+session_start();
+ // Start the session
 
 $conn = new Database(); // Create a database connection
 
@@ -49,19 +52,23 @@ if (isset($_POST["submit"])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_type'] = $userType;
         $_SESSION['email'] = $user['email'];
+        $_SESSION['firstname'] = $user['firstname'];
+        $_SESSION['lastname'] = $user['lastname'];
+        $_SESSION['cin'] = $user['cin'];
+        $_SESSION['date_of_birth'] = $user['date_of_birth'];
 
         // Redirect based on user type
         switch ($userType) {
             case 'admin':
-                header("Location: admin_dashboard.php");
+                header("Location: ../Indexes/adminindex.php");
                 exit();
 
             case 'professor':
-                header("Location: professor_dashboard.php");
+                header("Location: ../Indexes/professorindex.php");
                 exit();
 
             case 'student':
-                header("Location: student_dashboard.php");
+                header("Location: ../Indexes/studentindex.php");
                 exit();
         }
     } else {

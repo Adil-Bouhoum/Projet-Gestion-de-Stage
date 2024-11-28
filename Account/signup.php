@@ -13,18 +13,29 @@ if (isset($_POST["submit"])) {
     $admin->cin =$_POST["cin"];
     $admin->email = $_POST["signup-email"];
     // File upload handling
+    $uploadDir = '../Assets/Images/Uploads/';
     $admin->profile_picture_url = '';
+    
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
-        // Validate file type (example: image files only)
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        if (in_array($_FILES['profile_picture']['type'], $allowedTypes)) {
-            $admin->profile_picture_url = '../Assets/Images/Uploads/' . basename($_FILES["profile_picture"]["name"]);
-            move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $admin->profile_picture_url);
+        $fileType = $_FILES['profile_picture']['type'];
+    
+        if (in_array($fileType, $allowedTypes)) {
+            $fileName = uniqid() . '-' . basename($_FILES["profile_picture"]["name"]);
+            $targetFile = $uploadDir . $fileName;
+    
+            if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $targetFile)) {
+                $admin->profile_picture_url = $targetFile;
+            } else {
+                die("Failed to upload file.");
+            }
         } else {
-            echo "Invalid file type. Only JPG, PNG, and GIF are allowed.";
-            exit;
+            die("Invalid file type. Allowed: JPG, PNG, GIF.");
         }
+    } else {
+        die("File upload error: " . $_FILES['profile_picture']['error']);
     }
+    
 
     // Generate password
     $admin->password_hash = $admin->generateAdminPass();
@@ -98,9 +109,9 @@ if (isset($_POST["submit"])) {
             </div>
             <div class="form-group">
             <label for="profile_picture">Profile Picture: </label>
-            <input type="file" name="profile_picture" id="profile_picture" class="form-control">
+            <input type="file" name="profile_picture" id="profile_picture" class="form-control" accept="image/*">
             </div>
-            <button type="submit" name="submit" class="btn btn-success">Submit</button>
+            <button type="submit" name="submit" class="btn btn-success">Submit</button> 
             <a href="login.php"><button type="button" class="btn btn-outline-success">Login</button></a>
         </form>
         </div>

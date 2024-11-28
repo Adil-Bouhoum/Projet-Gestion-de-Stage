@@ -99,15 +99,15 @@ class Admin
         $query = "INSERT INTO " . $this->table . " 
                   (lastname, firstname, phone_number, date_of_birth, cin, email, profile_picture_url, password_hash, created_at) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-
+    
         // Prepare the statement using MySQLi
         $stmt = $this->getdb()->prepare($query);
-
+    
         // Check if the statement was prepared successfully
         if ($stmt === false) {
-            die('MySQL prepare error: ' . $this->conn->error);
+            die('MySQL prepare error: ' . $this->getdb()->error);
         }
-
+    
         // Sanitize input data
         $this->lastname = htmlspecialchars(strip_tags($this->lastname));
         $this->firstname = htmlspecialchars(strip_tags($this->firstname));
@@ -116,13 +116,11 @@ class Admin
         $this->cin = htmlspecialchars(strip_tags($this->cin));
         $this->email = htmlspecialchars(strip_tags($this->email));
         $this->profile_picture_url = htmlspecialchars(strip_tags($this->profile_picture_url));
-        $this->password_hash =password_hash($this->password_hash, PASSWORD_BCRYPT);
-        
-        // Generate a password reset token (optional, only if needed)
-        $this->password_reset_token = bin2hex(random_bytes(16)); // Generates a secure random token
-
+        $this->password_hash = password_hash($this->password_hash, PASSWORD_BCRYPT);
+    
         // Bind parameters for MySQLi
-        $stmt->bind_param("ssssssss", 
+        $stmt->bind_param(
+            "ssssssss", 
             $this->lastname, 
             $this->firstname, 
             $this->phone_number, 
@@ -130,19 +128,20 @@ class Admin
             $this->cin, 
             $this->email, 
             $this->profile_picture_url, 
-            $this->password_hash, 
+            $this->password_hash
         );
-
+        
+    
         // Execute the query
         if ($stmt->execute()) {
             return true; // Successfully created the admin
         }
-
+    
         // Log error (optional)
         error_log("Error creating admin: " . $stmt->error);
-
+    
         return false; // Failed to create the admin
     }
-
+    
 }
 ?>
