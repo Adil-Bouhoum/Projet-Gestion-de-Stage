@@ -41,6 +41,18 @@ class Student
         return $this->conn;
     }
 
+    public function generateStudentPass($length = 12)
+    {
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+';
+        $characters = str_shuffle($characters);
+        $password = '';
+        for ($i = 0; $i < $length; $i++) {
+            $password .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+        return $password;
+    }
+
+
     function getStudentByEmail($email)
     {
         $query = "SELECT * FROM " . $this->table . " WHERE email = ?";
@@ -67,8 +79,8 @@ class Student
     public function createStudent()
     {
         $query = "INSERT INTO " . $this->table . " 
-                  (firstname, lastname, email, password_hash, date_of_birth, phone_number, profile_picture_url, cin, student_id, department, year, major, assigned_professor_id, internship_status, company_name, start_date, end_date, resume_url, portfolio_url, created_at) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+                  (firstname, lastname, email, password_hash, date_of_birth, phone_number, profile_picture_url, cin, year, major, created_at) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
         $stmt = $this->conn->prepare($query);
 
@@ -85,21 +97,12 @@ class Student
         $this->phone_number = htmlspecialchars(strip_tags($this->phone_number));
         $this->profile_picture_url = htmlspecialchars(strip_tags($this->profile_picture_url));
         $this->cin = htmlspecialchars(strip_tags($this->cin));
-        $this->student_id = htmlspecialchars(strip_tags($this->student_id));
-        $this->department = htmlspecialchars(strip_tags($this->department));
         $this->year = htmlspecialchars(strip_tags($this->year));
         $this->major = htmlspecialchars(strip_tags($this->major));
-        $this->assigned_professor_id = htmlspecialchars(strip_tags($this->assigned_professor_id));
-        $this->internship_status = htmlspecialchars(strip_tags($this->internship_status));
-        $this->company_name = htmlspecialchars(strip_tags($this->company_name));
-        $this->start_date = htmlspecialchars(strip_tags($this->start_date));
-        $this->end_date = htmlspecialchars(strip_tags($this->end_date));
-        $this->resume_url = htmlspecialchars(strip_tags($this->resume_url));
-        $this->portfolio_url = htmlspecialchars(strip_tags($this->portfolio_url));
 
         // Bind parameters
         $stmt->bind_param(
-            "sssssssssssissssss",
+            "ssssssssss",
             $this->firstname,
             $this->lastname,
             $this->email,
@@ -108,17 +111,8 @@ class Student
             $this->phone_number,
             $this->profile_picture_url,
             $this->cin,
-            $this->student_id,
-            $this->department,
             $this->year,
             $this->major,
-            $this->assigned_professor_id,
-            $this->internship_status,
-            $this->company_name,
-            $this->start_date,
-            $this->end_date,
-            $this->resume_url,
-            $this->portfolio_url
         );
 
         if ($stmt->execute()) {

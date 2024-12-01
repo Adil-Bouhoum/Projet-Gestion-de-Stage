@@ -56,27 +56,13 @@ if (isset($_POST["submit"])) {
         $_SESSION['lastname'] = $user['lastname'];
         $_SESSION['cin'] = $user['cin'];
         $_SESSION['date_of_birth'] = $user['date_of_birth'];
-
+        header("Location: ../Indexes/index.php");
         // Redirect based on user type
-        switch ($userType) {
-            case 'admin':
-                header("Location: ../Indexes/adminindex.php");
-                exit();
 
-            case 'professor':
-                header("Location: ../Indexes/professorindex.php");
-                exit();
-
-            case 'student':
-                header("Location: ../Indexes/studentindex.php");
-                exit();
-        }
     } else {
+        echo "INVALID ACCOUNT";
         // Set error in the session if login failed
         $_SESSION['error'] = "Invalid email or password.";
-
-        // Redirect back to login page
-        header("Location: login.php");
         exit();
     }
 }
@@ -116,8 +102,7 @@ if (isset($_POST["submit"])) {
                 <label for="login-password">Password</label>
                 <input type="password" id="login-password" name="login-password" class="form-control"  placeholder="Password">
             </div>
-            <button type="submit" name="submit" class="btn btn-success">Submit</button>
-            <a href="signup.php"><button type="button" class="btn btn-outline-success">Signup</button></a>
+            <button type="submit" name="submit" class="btn btn-success">Submit</button> 
         </form>
         </div>
     </div>

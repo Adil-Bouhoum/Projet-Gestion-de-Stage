@@ -14,4 +14,11 @@ function logoutUser() {
     exit();
 }
 
+if (isLoggedIn()) {
+    logoutUser();
+} else {
+    header("Location: login.php");
+    exit();
+}
+
 ?>
