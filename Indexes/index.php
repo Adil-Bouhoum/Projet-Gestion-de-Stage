@@ -5,6 +5,8 @@ if (!isset($_SESSION['user_id'])) {
     exit(); 
 }
 
+$user_type = $_SESSION['user_type'] ;
+
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +23,7 @@ if (!isset($_SESSION['user_id'])) {
 
     <?php include('../components/nvb.php'); ?>
     <?php include('../components/snb.php'); ?>
-
+    <?php if ($user_type == "admin")  include('../components/students_list.php');?>
     
     <div class="container-fluid p-0 mt-5">
         <!-- Content goes here -->

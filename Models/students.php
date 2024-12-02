@@ -7,7 +7,7 @@ class Student
     private $table = "students";
 
     // Student properties
-    public $id; // Now an auto-incrementing integer
+    public $id;
     public $firstname;
     public $lastname;
     public $email;
@@ -52,7 +52,7 @@ class Student
         return $password;
     }
 
-
+    // Get student by email
     function getStudentByEmail($email)
     {
         $query = "SELECT * FROM " . $this->table . " WHERE email = ?";
@@ -68,12 +68,11 @@ class Student
         $result = $stmt->get_result();
 
         if ($result->num_rows === 1) {
-            return $result->fetch_assoc(); // Return professor data as an associative array
+            return $result->fetch_assoc(); // Return student data as an associative array
         } else {
-            return null; // No professor found with that email
+            return null; // No student found with that email
         }
     }
-
 
     // Create a new student in the database
     public function createStudent()
@@ -92,7 +91,7 @@ class Student
         $this->firstname = htmlspecialchars(strip_tags($this->firstname));
         $this->lastname = htmlspecialchars(strip_tags($this->lastname));
         $this->email = htmlspecialchars(strip_tags($this->email));
-        $this->password_hash = $this->password_hash =password_hash($this->password_hash, PASSWORD_BCRYPT);
+        $this->password_hash = password_hash($this->password_hash, PASSWORD_BCRYPT);
         $this->date_of_birth = htmlspecialchars(strip_tags($this->date_of_birth));
         $this->phone_number = htmlspecialchars(strip_tags($this->phone_number));
         $this->profile_picture_url = htmlspecialchars(strip_tags($this->profile_picture_url));
@@ -112,7 +111,7 @@ class Student
             $this->profile_picture_url,
             $this->cin,
             $this->year,
-            $this->major,
+            $this->major
         );
 
         if ($stmt->execute()) {
@@ -122,5 +121,86 @@ class Student
         error_log("Error creating student: " . $stmt->error);
         return false;
     }
+
+    // Fetch all students (for displaying in the table)
+    public function getAllStudents()
+    {
+        $query = "SELECT id, firstname, lastname, email, date_of_birth, phone_number, cin, department, year, internship_status, company_name, start_date, end_date, resume_url, portfolio_url, major FROM " . $this->table;
+        $stmt = $this->getdb()->prepare($query);
+        if ($stmt === false) {
+            die('MySQL prepare error: ' . $this->conn->error);
+        }
+        
+        $stmt->execute();
+        return $stmt->get_result(); // Return the result set
+    }
+
+    // Update student data
+    public function updateStudent()
+    {
+        $query = "UPDATE " . $this->table . " SET
+                  firstname = ?, lastname = ?, email = ?, date_of_birth = ?, phone_number = ?, cin = ?, department = ?, year = ?, major = ?
+                  WHERE id = ?";
+
+        $stmt = $this->conn->prepare($query);
+        if ($stmt === false) {
+            die('MySQL prepare error: ' . $this->conn->error);
+        }
+
+        $stmt->bind_param(
+            "sssssssiii",
+            $this->firstname,  // 's' for string (First Name)
+            $this->lastname,   // 's' for string (Last Name)
+            $this->email,      // 's' for string (Email)
+            $this->date_of_birth, // 's' for string (Date of Birth)
+            $this->phone_number, // 's' for string (Phone Number)
+            $this->cin,         // 's' for string (CIN)
+            $this->department,  // 's' for string (Department)
+            $this->major,
+            $this->year,        // 'i' for integer (Year)
+            $this->id
+        );
+
+        if (!$stmt->execute()) {
+            // Output the error to help debug
+            die('Execute failed: ' . $stmt->error);
+        }
+    
+        return true;
+    }
+
+    public function getStudentById($id)
+{
+    $query = "SELECT * FROM " . $this->table . " WHERE id = ?";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        return $result->fetch_assoc(); // Return student data as an associative array
+    }
+    return null;
+}
+
+    // Delete student by ID
+    public function deleteStudent($id)
+    {
+        $query = "DELETE FROM " . $this->table . " WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        if ($stmt === false) {
+            die('MySQL prepare error: ' . $this->conn->error);
+        }
+
+        $stmt->bind_param("i", $id);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        error_log("Error deleting student: " . $stmt->error);
+        return false;
+    }
+
 }
 ?>
